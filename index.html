@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>توکن تبدیل | ارسال کارت قدردانی</title>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      font-family: 'Vazirmatn', Tahoma, sans-serif;
+      background: #FFFFFF;
+      color: #161616;
+    }
+    .box {
+      width: 100%;
+      min-height: 100vh;
+      background: #FFFFFF;
+      padding: 20px 32px;
+      display: flex;
+      flex-direction: column;
+    }
+    .header {
+      border-bottom: 1.5px solid #EFEFEF;
+      padding-bottom: 14px;
+      margin-bottom: 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    h2 { margin: 0; font-size: 24px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+    .subtitle { font-size: 14px; color: #666; }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 32px;
+      align-items: start;
+      width: 100%;
+      flex: 1;
+    }
+    @media (max-width: 950px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .box { padding: 16px; }
+    }
+
+    .form-panel {
+      background: #F9F9F7;
+      padding: 22px;
+      border-radius: 18px;
+      border: 1.5px solid #EAEAE6;
+      position: sticky;
+      top: 16px;
+    }
+    label.field-label { display: block; font-weight: 700; margin: 0 0 8px; font-size: 14px; color: #111; }
+    .field-group { margin-bottom: 16px; }
+
+    select, input[type="text"], textarea {
+      width: 100%;
+      padding: 10px 13px;
+      border: 1.5px solid #DCDCDC;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 13.5px;
+      background: #FFF;
+      transition: 0.15s;
+    }
+    select:focus, input[type="text"]:focus, textarea:focus { outline: none; border-color: #F5B800; }
+
+    .member-list {
+      margin-top: 8px;
+      max-height: 150px;
+      overflow-y: auto;
+      border: 1.5px solid #E2E2DE;
+      border-radius: 12px;
+      background: #FFF;
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .member-item {
+      padding: 7px 11px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: 0.12s;
+    }
+    .member-item:hover { background: #F5F5F2; }
+    .member-item.selected {
+      background: #111;
+      color: #F5B800;
+      font-weight: 700;
+    }
+    .member-team-tag {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #EFEFEF;
+      color: #555;
+    }
+    .member-item.selected .member-team-tag {
+      background: #333;
+      color: #F5B800;
+    }
+    .empty-members {
+      text-align: center;
+      color: #888;
+      font-size: 12.5px;
+      padding: 14px 8px;
+    }
+
+    .sender-pill {
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      background: #111;
+      color: #FFF;
+      padding: 10px 14px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      font-size: 13px;
+    }
+    .sender-pill strong { color: #F5B800; }
+    .change-btn {
+      background: #2C2C2C;
+      color: #F5B800;
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-family: inherit;
+      font-size: 11.5px;
+      cursor: pointer;
+    }
+    .change-btn:hover { background: #3D3D3D; }
+
+    .cat-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+    .cat-btn {
+      padding: 10px 18px;
+      border: 1.5px solid #E0E0E0;
+      border-radius: 999px;
+      background: #FAFAFA;
+      color: #333;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .cat-btn:hover { border-color: #111; }
+    .cat-btn.active { background: #111; color: #F5B800; border-color: #111; }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+      max-height: calc(100vh - 175px);
+      overflow-y: auto;
+      padding: 4px 4px 20px 4px;
+    }
+    .card-item {
+      border: 2.5px solid #EAEAEA;
+      border-radius: 16px;
+      padding: 10px;
+      cursor: pointer;
+      background: #FFF;
+      transition: 0.15s;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .card-item:hover { border-color: #B0B0B0; transform: translateY(-2px); }
+    .card-item.selected {
+      border-color: #F5B800;
+      background: #FFFBEB;
+      box-shadow: 0 8px 22px rgba(245, 184, 0, 0.28);
+    }
+    .card-item.selected::after {
+      content: '✓';
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      width: 28px;
+      height: 28px;
+      background: #111;
+      color: #F5B800;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: bold;
+    }
+    .card-img-wrap {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+      background: #FAF9F5;
+    }
+    .card-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .card-no-img { font-size: 13px; color: #AAA; }
+    .card-title { font-weight: 800; font-size: 15px; margin-bottom: 4px; color: #111; text-align: center; }
+    .card-desc { font-size: 12px; color: #666; line-height: 1.5; text-align: center; }
+
+    .selected-bar {
+      margin-bottom: 12px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #111;
+      background: #FFF6D6;
+      border: 1.5px solid #F5B800;
+      padding: 8px 12px;
+      border-radius: 10px;
+      display: none;
+    }
+    .counter { font-size: 12px; color: #777; text-align: left; margin-top: 4px; }
+    .anon-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 13px; cursor: pointer; }
+    button.submit {
+      width: 100%;
+      margin-top: 14px;
+      padding: 13px;
+      background: #111;
+      color: #F5B800;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: 0.15s;
+    }
+    button.submit:hover { background: #262626; }
+    button.submit:disabled { opacity: 0.5; cursor: not-allowed; }
+    #msg { margin-top: 12px; padding: 10px; border-radius: 10px; font-size: 13px; display: none; text-align: center; font-weight: 600; }
+    .ok { background: #E6F4EA; color: #137333; }
+    .err { background: #FCE8E6; color: #C5221F; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="header">
+      <h2>🪙 ارسال کارت توکن تبدیل</h2>
+      <div class="subtitle">تیم و همکار ← دسته و کارت ← یک جمله داستان (زیر ۳۰ ثانیه)</div>
+    </div>
+
+    <div class="main-grid">
+      <div class="form-panel">
+        <div id="senderPill" class="sender-pill">
+          <span>از طرف: <strong id="senderPillName"></strong></span>
+          <button type="button" class="change-btn" onclick="openSenderPicker()">تغییر</button>
+        </div>
+
+        <div class="field-group" id="senderPickerBox">
+          <label class="field-label">از طرف (نام خودت را پیدا کن — فقط بار اول)</label>
+          <select id="senderTeamSelect" onchange="renderSenders()" style="margin-bottom: 8px;">
+            <option value="__ALL__">همه تیم‌ها (نمایش کل همکاران)</option>
+          </select>
+          <input type="text" id="senderSearch" oninput="renderSenders()" placeholder="نام خودت را بنویس..." autocomplete="off">
+          <div id="senderList" class="member-list">
+            <div class="empty-members">در حال بارگذاری...</div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">۱. برای کدوم همکار؟ (انتخاب تیم یا جستجو)</label>
+          <select id="teamSelect" onchange="renderMembers()" style="margin-bottom: 8px;">
+            <option value="__ALL__">همه تیم‌ها (نمایش کل همکاران)</option>
+          </select>
+          <input type="text" id="empSearch" oninput="renderMembers()" placeholder="جستجوی سریع نام همکار..." autocomplete="off">
+          <div id="memberList" class="member-list">
+            <div class="empty-members">در حال بارگذاری لیست همکاران...</div>
+          </div>
+        </div>
+
+        <div id="selectedReceiverBar" class="selected-bar"></div>
+        <div id="selectedCardBar" class="selected-bar"></div>
+
+        <div class="field-group" style="margin-bottom: 0;">
+          <label class="field-label">۳. داستانش چیه؟ (اجباری — حداکثر ۲۰۰ کاراکتر)</label>
+          <textarea id="story" rows="3" maxlength="200" placeholder="چی شد که این کارت رو می‌فرستی؟"></textarea>
+          <div class="counter"><span id="charCount">0</span> / 200</div>
+        </div>
+
+        <label class="anon-row">
+          <input type="checkbox" id="isAnon"> ارسال به صورت ناشناس (سهمیه ۱ بار در ماه)
+        </label>
+
+        <button class="submit" id="sendBtn" onclick="send()">ثبت و ارسال تراکنش</button>
+        <div id="msg"></div>
+      </div>
+
+      <div>
+        <label class="field-label">۲. دسته و کارت قدردانی را انتخاب کن</label>
+        <div id="catTabs" class="cat-tabs">در حال بارگذاری دسته‌ها...</div>
+        <div id="cardsContainer"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let employees = [];
+    let allCards = [];
+    let selectedSender = null;
+    let selectedReceiver = null;
+    let selectedCard = null;
+    let detectedEmail = '';
+    let urlSender = '';
+
+    // آدرس Web App در Apps Script (همان لینک /exec)
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzs9Km122id8iRLUa3DTM4GOh-NOkRJRmZ55og97YWXwr3DznE51NlxToeDTDwk4K7MZQ/exec';
+
+    const STORAGE_KEY = 'tabdeal_token_sender_email';
+
+    // ذخیره فرستنده: داخل آدرس صفحه (?sender=...) + localStorage به‌عنوان پشتیبان
+    function persistSenderEmail(email) {
+      try { if (window.localStorage) window.localStorage.setItem(STORAGE_KEY, email); } catch (e) {}
+    }
+
+    function readSavedSenderEmail() {
+      try {
+        if (window.localStorage) {
+          const v = window.localStorage.getItem(STORAGE_KEY);
+          if (v) return v;
+        }
+      } catch (e) {}
+      return '';
+    }
+
+    // اگر لینک شخصی (?sender=...) باز شده باشد، آن را هم می‌پذیریم
+    try {
+      urlSender = new URLSearchParams(window.location.search).get('sender') || '';
+    } catch (e) {}
+    loadData();
+
+    function loadData() {
+      fetch(API_URL + '?action=data')
+        .then(r => r.json())
+        .then(res => {
+          if (!res.ok) throw new Error(res.error || 'خطا در دریافت اطلاعات');
+          onDataLoaded(res.data);
+        })
+        .catch(() => {
+          document.getElementById('senderList').innerHTML = '<div class="empty-members">اتصال برقرار نشد. صفحه را دوباره باز کن.</div>';
+          document.getElementById('memberList').innerHTML = '<div class="empty-members">اتصال برقرار نشد. صفحه را دوباره باز کن.</div>';
+          document.getElementById('catTabs').textContent = '';
+        });
+    }
+
+    function onDataLoaded(data) {
+      {
+        employees = data.employees;
+        allCards = data.cards;
+        detectedEmail = data.userEmail || '';
+
+        const teams = [...new Set(employees.map(e => e.team).filter(Boolean))].sort();
+        const senderTeamSel = document.getElementById('senderTeamSelect');
+        const teamSel = document.getElementById('teamSelect');
+
+        teams.forEach(t => {
+          const count = employees.filter(e => e.team === t).length;
+          const label = `تیم ${t} (${count} نفر)`;
+
+          const opt1 = document.createElement('option');
+          opt1.value = t;
+          opt1.textContent = label;
+          senderTeamSel.appendChild(opt1);
+
+          const opt2 = document.createElement('option');
+          opt2.value = t;
+          opt2.textContent = label;
+          teamSel.appendChild(opt2);
+        });
+
+        const savedEmail = detectedEmail || urlSender || readSavedSenderEmail();
+        if (savedEmail) {
+          const found = employees.find(e => e.email.toLowerCase() === savedEmail.toLowerCase());
+          if (found) {
+            setSender(found, true);
+          }
+        }
+
+        renderSenders();
+        renderMembers();
+
+        const categories = [...new Set(allCards.map(c => c.category))];
+        const tabsEl = document.getElementById('catTabs');
+        tabsEl.innerHTML = '';
+
+        categories.forEach((cat, idx) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'cat-btn';
+          btn.textContent = cat;
+          btn.onclick = () => selectCategory(cat, btn);
+          tabsEl.appendChild(btn);
+          if (idx === 0) selectCategory(cat, btn);
+        });
+
+        if (categories.length > 1) {
+          const allBtn = document.createElement('button');
+          allBtn.type = 'button';
+          allBtn.className = 'cat-btn';
+          allBtn.textContent = 'همه کارت‌ها';
+          allBtn.onclick = () => selectCategory('__ALL__', allBtn);
+          tabsEl.appendChild(allBtn);
+        }
+      }
+    }
+
+    function setSender(emp, shouldSave) {
+      selectedSender = emp;
+      if (shouldSave) {
+        persistSenderEmail(emp.email);
+      }
+      document.getElementById('senderPillName').textContent = emp.team ? `${emp.name} (${emp.team})` : emp.name;
+      document.getElementById('senderPill').style.display = 'flex';
+      document.getElementById('senderPickerBox').style.display = 'none';
+    }
+
+    function openSenderPicker() {
+      document.getElementById('senderPill').style.display = 'none';
+      document.getElementById('senderPickerBox').style.display = 'block';
+      document.getElementById('senderSearch').focus();
+      renderSenders();
+    }
+
+    function renderSenders() {
+      const chosenTeam = document.getElementById('senderTeamSelect').value;
+      const query = document.getElementById('senderSearch').value.trim().toLowerCase();
+      const listEl = document.getElementById('senderList');
+      listEl.innerHTML = '';
+
+      const filtered = employees.filter(e => {
+        const matchTeam = (chosenTeam === '__ALL__') || (e.team === chosenTeam);
+        const matchName = !query || e.name.toLowerCase().includes(query);
+        return matchTeam && matchName;
+      });
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = '<div class="empty-members">همکاری با این نام پیدا نشد.</div>';
+        return;
+      }
+
+      filtered.forEach(emp => {
+        const row = document.createElement('div');
+        const isSel = selectedSender && selectedSender.email === emp.email;
+        row.className = 'member-item' + (isSel ? ' selected' : '');
+        row.innerHTML = `<span>${emp.name}</span>${emp.team ? `<span class="member-team-tag">${emp.team}</span>` : ''}`;
+        row.onclick = () => {
+          setSender(emp, true);
+        };
+        listEl.appendChild(row);
+      });
+    }
+
+    function renderMembers() {
+      const chosenTeam = document.getElementById('teamSelect').value;
+      const query = document.getElementById('empSearch').value.trim().toLowerCase();
+      const listEl = document.getElementById('memberList');
+      listEl.innerHTML = '';
+
+      const filtered = employees.filter(e => {
+        const matchTeam = (chosenTeam === '__ALL__') || (e.team === chosenTeam);
+        const matchName = !query || e.name.toLowerCase().includes(query);
+        return matchTeam && matchName;
+      });
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = '<div class="empty-members">همکاری با این مشخصات پیدا نشد.</div>';
+        return;
+      }
+
+      filtered.forEach(emp => {
+        const row = document.createElement('div');
+        const isSel = selectedReceiver && selectedReceiver.email === emp.email;
+        row.className = 'member-item' + (isSel ? ' selected' : '');
+        row.innerHTML = `<span>${emp.name}</span>${emp.team ? `<span class="member-team-tag">${emp.team}</span>` : ''}`;
+        row.onclick = () => {
+          selectedReceiver = emp;
+          const bar = document.getElementById('selectedReceiverBar');
+          bar.style.display = 'block';
+          bar.textContent = `گیرنده: ${emp.name}${emp.team ? ' — تیم ' + emp.team : ''}`;
+          renderMembers();
+        };
+        listEl.appendChild(row);
+      });
+    }
+
+    function selectCategory(category, activeBtn) {
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      activeBtn.classList.add('active');
+
+      const filtered = category === '__ALL__'
+        ? allCards
+        : allCards.filter(c => c.category === category);
+
+      const container = document.getElementById('cardsContainer');
+      container.innerHTML = '';
+
+      const grid = document.createElement('div');
+      grid.className = 'cards-grid';
+
+      filtered.forEach(c => {
+        const item = document.createElement('div');
+        item.className = 'card-item' + (selectedCard && selectedCard.title === c.title ? ' selected' : '');
+
+        const imgWrap = document.createElement('div');
+        imgWrap.className = 'card-img-wrap';
+        if (c.image) {
+          const img = document.createElement('img');
+          img.src = c.image;
+          img.alt = c.title;
+          img.loading = 'lazy';
+          img.onerror = () => { imgWrap.innerHTML = '<span class="card-no-img">خطا در بارگذاری تصویر</span>'; };
+          imgWrap.appendChild(img);
+        } else {
+          imgWrap.innerHTML = '<span class="card-no-img">بدون تصویر</span>';
+        }
+
+        const titleEl = document.createElement('div');
+        titleEl.className = 'card-title';
+        titleEl.textContent = c.title;
+
+        item.appendChild(imgWrap);
+        item.appendChild(titleEl);
+
+        if (c.desc) {
+          const descEl = document.createElement('div');
+          descEl.className = 'card-desc';
+          descEl.textContent = c.desc;
+          item.appendChild(descEl);
+        }
+
+        item.onclick = () => {
+          document.querySelectorAll('.card-item').forEach(el => el.classList.remove('selected'));
+          item.classList.add('selected');
+          selectedCard = c;
+          const bar = document.getElementById('selectedCardBar');
+          bar.style.display = 'block';
+          bar.textContent = `کارت انتخاب‌شده: ${c.title}`;
+        };
+
+        grid.appendChild(item);
+      });
+
+      container.appendChild(grid);
+    }
+
+    document.getElementById('story').addEventListener('input', e => {
+      document.getElementById('charCount').textContent = e.target.value.length;
+    });
+
+    function showMsg(text, isError) {
+      const m = document.getElementById('msg');
+      m.style.display = 'block';
+      m.className = isError ? 'err' : 'ok';
+      m.textContent = text;
+    }
+
+    function send() {
+      const senderEmail = selectedSender ? selectedSender.email : detectedEmail;
+      const story = document.getElementById('story').value.trim();
+
+      if (!senderEmail) return showMsg('لطفاً نام خودت را در بخش «از طرف» انتخاب کن.', true);
+      if (!selectedReceiver) return showMsg('لطفاً تیم و نام همکار گیرنده را انتخاب کن.', true);
+      if (!selectedCard) return showMsg('لطفاً یک کارت را انتخاب کن.', true);
+      if (!story) return showMsg('کارت بدون داستان ممنوعه! یک جمله کوتاه بنویس.', true);
+
+      const btn = document.getElementById('sendBtn');
+      btn.disabled = true;
+      btn.textContent = 'در حال ارسال...';
+
+      const payload = {
+        senderEmail: senderEmail,
+        senderName: selectedSender ? selectedSender.name : '',
+        receiverName: selectedReceiver.name,
+        receiverEmail: selectedReceiver.email,
+        cardTitle: selectedCard.title,
+        cardImage: selectedCard.image,
+        story: story,
+        isAnonymous: document.getElementById('isAnon').checked
+      };
+
+      fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      })
+        .then(r => r.json())
+        .then(res => {
+          if (!res.ok) throw new Error(res.error);
+          showMsg(res.message, false);
+          selectedReceiver = null;
+          selectedCard = null;
+          document.getElementById('empSearch').value = '';
+          document.getElementById('story').value = '';
+          document.getElementById('charCount').textContent = '0';
+          document.getElementById('isAnon').checked = false;
+          document.getElementById('selectedReceiverBar').style.display = 'none';
+          document.getElementById('selectedCardBar').style.display = 'none';
+          document.querySelectorAll('.card-item').forEach(el => el.classList.remove('selected'));
+          renderMembers();
+        })
+        .catch(err => {
+          showMsg(err && err.message ? err.message : 'ارسال انجام نشد. دوباره تلاش کن.', true);
+        })
+        .finally(() => {
+          btn.disabled = false;
+          btn.textContent = 'ثبت و ارسال تراکنش';
+        });
+    }
+  </script>
+</body>
+</html>
